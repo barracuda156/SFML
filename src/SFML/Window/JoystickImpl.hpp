@@ -81,7 +81,11 @@ struct JoystickState
 
 #elif defined(SFML_SYSTEM_MACOS)
 
+#ifdef __clang
 #include <SFML/Window/macOS/JoystickImpl.hpp>
+#else
+#include <SFML/Window/OpenBSD/JoystickImpl.hpp>
+#endif
 
 #elif defined(SFML_SYSTEM_IOS)
 

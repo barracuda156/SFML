@@ -49,8 +49,13 @@ using WindowHandle = unsigned long;
 
 #elif defined(SFML_SYSTEM_MACOS)
 
+#ifdef __clang__
 // Window handle is NSWindow or NSView (void*) on macOS - Cocoa
 using WindowHandle = void*;
+#else
+// Window handle is Window (unsigned long) on Unix - X11
+using WindowHandle = unsigned long;
+#endif
 
 #elif defined(SFML_SYSTEM_IOS)
 

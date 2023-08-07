@@ -167,6 +167,7 @@ elseif(SFML_OS_LINUX OR SFML_OS_FREEBSD OR SFML_OS_OPENBSD OR SFML_OS_NETBSD)
     endif()
     source_group("unix" FILES ${PLATFORM_SRC})
 elseif(SFML_OS_MACOS)
+  if(SFML_COMPILER_CLANG)
     enable_language(OBJC OBJCXX)
     set(PLATFORM_SRC
         ${SRCROOT}/macOS/cpp_objc_conversion.h
@@ -219,6 +220,34 @@ elseif(SFML_OS_MACOS)
         ${SRCROOT}/macOS/AutoreleasePoolWrapper.hpp
         ${SRCROOT}/macOS/AutoreleasePoolWrapper.mm
     )
+  else()
+    set(PLATFORM_SRC
+        ${SRCROOT}/Unix/CursorImpl.hpp
+        ${SRCROOT}/Unix/CursorImpl.cpp
+        ${SRCROOT}/Unix/ClipboardImpl.hpp
+        ${SRCROOT}/Unix/ClipboardImpl.cpp
+        ${SRCROOT}/Unix/InputImpl.cpp
+        ${SRCROOT}/Unix/InputImpl.hpp
+        ${SRCROOT}/Unix/KeyboardImpl.hpp
+        ${SRCROOT}/Unix/KeyboardImpl.cpp
+        ${SRCROOT}/Unix/KeySymToKeyMapping.hpp
+        ${SRCROOT}/Unix/KeySymToKeyMapping.cpp
+        ${SRCROOT}/Unix/KeySymToUnicodeMapping.hpp
+        ${SRCROOT}/Unix/KeySymToUnicodeMapping.cpp
+        ${SRCROOT}/Unix/SensorImpl.cpp
+        ${SRCROOT}/Unix/SensorImpl.hpp
+        ${SRCROOT}/Unix/Display.cpp
+        ${SRCROOT}/Unix/Display.hpp
+        ${SRCROOT}/Unix/Utils.hpp
+        ${SRCROOT}/Unix/VideoModeImpl.cpp
+        ${SRCROOT}/Unix/VulkanImplX11.cpp
+        ${SRCROOT}/Unix/VulkanImplX11.hpp
+        ${SRCROOT}/Unix/WindowImplX11.cpp
+        ${SRCROOT}/Unix/WindowImplX11.hpp
+        ${SRCROOT}/OpenBSD/JoystickImpl.cpp
+        ${SRCROOT}/OpenBSD/JoystickImpl.hpp
+    )
+  endif()
     source_group("mac" FILES ${PLATFORM_SRC})
 elseif(SFML_OS_IOS)
     enable_language(OBJCXX)
@@ -287,6 +316,7 @@ if(SFML_OS_LINUX OR SFML_OS_FREEBSD OR SFML_OS_OPENBSD OR SFML_OS_NETBSD)
         target_link_libraries(sfml-window PRIVATE X11::X11 X11::Xrandr X11::Xcursor)
     endif()
 endif()
+
 target_link_libraries(sfml-window PUBLIC SFML::System)
 
 # glad sources
@@ -294,7 +324,7 @@ target_include_directories(sfml-window SYSTEM PRIVATE "${PROJECT_SOURCE_DIR}/ext
 
 # When static linking on macOS, we need to add this flag for objective C to work
 # https://developer.apple.com/library/archive/qa/qa1490/_index.html
-if ((NOT BUILD_SHARED_LIBS) AND SFML_OS_MACOS)
+if ((NOT BUILD_SHARED_LIBS) AND SFML_OS_MACOS AND (CMAKE_CXX_COMPILER_ID MATCHES "Clang"))
     target_link_libraries(sfml-window PRIVATE -ObjC)
 endif()
 
@@ -336,7 +366,12 @@ elseif(SFML_OS_WINDOWS)
 elseif(SFML_OS_FREEBSD)
     target_link_libraries(sfml-window PRIVATE usbhid)
 elseif(SFML_OS_MACOS)
+if(SFML_COMPILER_CLANG)
     target_link_libraries(sfml-window PRIVATE "-framework Foundation" "-framework AppKit" "-framework IOKit" "-framework Carbon")
+elseif()
+    find_package(X11 REQUIRED COMPONENTS Xrandr Xcursor)
+    target_link_libraries(sfml-window PRIVATE X11::X11 X11::Xrandr X11::Xcursor)
+endif()
 elseif(SFML_OS_IOS)
     target_link_libraries(sfml-window PUBLIC "-framework Foundation" "-framework UIKit" "-framework CoreGraphics" "-framework QuartzCore" "-framework CoreMotion")
 elseif(SFML_OS_ANDROID)

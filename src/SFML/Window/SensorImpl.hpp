@@ -42,7 +42,11 @@
 
 #elif defined(SFML_SYSTEM_MACOS)
 
+#ifdef __clang
 #include <SFML/Window/macOS/SensorImpl.hpp>
+#else
+#include <SFML/Window/Unix/SensorImpl.hpp>
+#endif
 
 #elif defined(SFML_SYSTEM_IOS)
 

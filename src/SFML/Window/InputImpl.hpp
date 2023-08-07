@@ -39,7 +39,11 @@
 #include <SFML/Window/Unix/InputImpl.hpp>
 #endif
 #elif defined(SFML_SYSTEM_MACOS)
+#ifdef __clang__
 #include <SFML/Window/macOS/InputImpl.hpp>
+#else
+#include <SFML/Window/Unix/InputImpl.hpp>
+#endif
 #elif defined(SFML_SYSTEM_IOS)
 #include <SFML/Window/iOS/InputImpl.hpp>
 #elif defined(SFML_SYSTEM_ANDROID)
